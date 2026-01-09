@@ -55,44 +55,37 @@ void MainWindow::setupBoard()
 
 void MainWindow::addPiece(const QString &label, int file, int rank, bool isWhite)
 {
-    const QColor fill = isWhite ? QColor(245, 245, 245) : QColor(40, 40, 40);
-    const QColor outline = isWhite ? QColor(120, 120, 120) : QColor(10, 10, 10);
     const QColor textColor = isWhite ? QColor(30, 30, 30) : QColor(230, 230, 230);
 
-    const int x = file * kSquareSize + kPieceInset;
-    const int y = rank * kSquareSize + kPieceInset;
+    const int x = file * kSquareSize;
+    const int y = rank * kSquareSize;
 
-    auto *piece = scene->addEllipse(
-        x,
-        y,
-        kPieceSize,
-        kPieceSize,
-        QPen(outline, 2),
-        QBrush(fill)
-    );
-    piece->setFlag(QGraphicsItem::ItemIsMovable, true);
-    piece->setFlag(QGraphicsItem::ItemIsSelectable, true);
-    piece->setZValue(1);
-
-    auto *text = new QGraphicsSimpleTextItem(label, piece);
-    QFont font("Times New Roman", 18, QFont::Bold);
+    auto *text = new QGraphicsSimpleTextItem(label);
+    QFont font("Segoe UI Symbol", 28);
     text->setFont(font);
     text->setBrush(textColor);
+    text->setZValue(1);
+    text->setFlag(QGraphicsItem::ItemIsMovable, true);
+    text->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     const QRectF textBounds = text->boundingRect();
-    const qreal centerX = x + (kPieceSize - textBounds.width()) / 2.0;
-    const qreal centerY = y + (kPieceSize - textBounds.height()) / 2.0;
-    text->setPos(centerX - x, centerY - y);
+    const qreal centerX = x + (kSquareSize - textBounds.width()) / 2.0;
+    const qreal centerY = y + (kSquareSize - textBounds.height()) / 2.0;
+    text->setPos(centerX, centerY);
+    scene->addItem(text);
 }
 
 void MainWindow::setupPieces()
 {
-    const QStringList backRank = {"R", "N", "B", "Q", "K", "B", "N", "R"};
+    const QStringList blackBackRank = {"♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"};
+    const QStringList whiteBackRank = {"♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"};
+    const QString blackPawn = "♟";
+    const QString whitePawn = "♙";
 
     for (int file = 0; file < kBoardSize; ++file) {
-        addPiece(backRank[file], file, 0, false);
-        addPiece("P", file, 1, false);
-        addPiece("P", file, 6, true);
-        addPiece(backRank[file], file, 7, true);
+        addPiece(blackBackRank[file], file, 0, false);
+        addPiece(blackPawn, file, 1, false);
+        addPiece(whitePawn, file, 6, true);
+        addPiece(whiteBackRank[file], file, 7, true);
     }
 }
