@@ -1,17 +1,46 @@
 #include "mainwindow.h"
 
 #include <QGraphicsRectItem>
-#include <QGraphicsEllipseItem>
 #include <QGraphicsSimpleTextItem>
+#include <QGraphicsSceneMouseEvent>
 #include <QFont>
 #include <QPainter>
 
 namespace {
 constexpr int kBoardSize = 8;
 constexpr int kSquareSize = 64;
-constexpr int kPieceSize = 48;
-constexpr int kPieceInset = (kSquareSize - kPieceSize) / 2;
 }
+
+class PieceItem : public QGraphicsSimpleTextItem
+{
+public:
+    explicit PieceItem(const QString &label, QGraphicsItem *parent = nullptr)
+        : QGraphicsSimpleTextItem(label, parent)
+    {
+        setFlag(QGraphicsItem::ItemIsMovable, true);
+        setFlag(QGraphicsItem::ItemIsSelectable, true);
+        setZValue(1);
+    }
+
+protected:
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override
+    {
+        QGraphicsSimpleTextItem::mouseReleaseEvent(event);
+
+        const QRectF bounds = boundingRect();
+        const QPointF pos = this->pos();
+        const QPointF center = pos + QPointF(bounds.width() / 2.0, bounds.height() / 2.0);
+
+        int file = static_cast<int>(center.x() / kSquareSize);
+        int rank = static_cast<int>(center.y() / kSquareSize);
+        file = qBound(0, file, kBoardSize - 1);
+        rank = qBound(0, rank, kBoardSize - 1);
+
+        const qreal targetX = file * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
+        const qreal targetY = rank * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
+        setPos(targetX, targetY);
+    }
+};
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -60,13 +89,10 @@ void MainWindow::addPiece(const QString &label, int file, int rank, bool isWhite
     const int x = file * kSquareSize;
     const int y = rank * kSquareSize;
 
-    auto *text = new QGraphicsSimpleTextItem(label);
+    auto *text = new PieceItem(label);
     QFont font("Segoe UI Symbol", 28);
     text->setFont(font);
     text->setBrush(textColor);
-    text->setZValue(1);
-    text->setFlag(QGraphicsItem::ItemIsMovable, true);
-    text->setFlag(QGraphicsItem::ItemIsSelectable, true);
 
     const QRectF textBounds = text->boundingRect();
     const qreal centerX = x + (kSquareSize - textBounds.width()) / 2.0;
@@ -77,10 +103,10 @@ void MainWindow::addPiece(const QString &label, int file, int rank, bool isWhite
 
 void MainWindow::setupPieces()
 {
-    const QStringList blackBackRank = {"♜", "♞", "♝", "♛", "♚", "♝", "♞", "♜"};
-    const QStringList whiteBackRank = {"♖", "♘", "♗", "♕", "♔", "♗", "♘", "♖"};
-    const QString blackPawn = "♟";
-    const QString whitePawn = "♙";
+    const QStringList blackBackRank = {"\u265C", "\u265E", "\u265D", "\u265B", "\u265A", "\u265D", "\u265E", "\u265C"};
+    const QStringList whiteBackRank = {"\u2656", "\u2658", "\u2657", "\u2655", "\u2654", "\u2657", "\u2658", "\u2656"};
+    const QString blackPawn = "\u265F";
+    const QString whitePawn = "\u2659";
 
     for (int file = 0; file < kBoardSize; ++file) {
         addPiece(blackBackRank[file], file, 0, false);
