@@ -5,6 +5,8 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 
+class PieceItem;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -15,10 +17,11 @@ public:
 private:
     void setupBoard();
     void setupPieces();
-    void addPiece(const QString &label, int file, int rank, bool isWhite);
+    void addPiece(PieceItem *item);
 
     QGraphicsScene *scene = nullptr;
     QGraphicsView *view = nullptr;
+    QList<PieceItem *> pieces;
 };
 
 #endif // MAINWINDOW_H

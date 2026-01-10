@@ -20,8 +20,8 @@ constexpr int kBoardOrigin = kBoardMargin;
 class PieceItem : public QGraphicsSimpleTextItem
 {
 public:
-    explicit PieceItem(int x, int y, const QString &label)
-        : QGraphicsSimpleTextItem(label), xPosition(x), yPosition(y)
+    explicit PieceItem(int x, int y, bool isWhite, const QString &label)
+        : QGraphicsSimpleTextItem(label), xPosition(x), yPosition(y), isWhite(isWhite)
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -49,13 +49,14 @@ protected:
 public:
     int xPosition;
     int yPosition;
+    bool isWhite;
 };
 
 class Pawn : public PieceItem
 {
 public:
-    explicit Pawn(int x, int y, const QString &label)
-        : PieceItem(x, y, label)
+    explicit Pawn(int x, int y, bool isWhite, const QString &label)
+        : PieceItem(x, y, isWhite, label)
     {
     }
 };
@@ -150,28 +151,27 @@ void MainWindow::setupBoard()
     }
 }
 
-void MainWindow::addPiece(const QString &label, int xPos, int yPos, bool isWhite)
+void MainWindow::addPiece(PieceItem *item)
 {
-    const QColor textColor = isWhite ? QColor(230, 230, 230) : QColor(30, 30, 30);
+    const QColor textColor = item->isWhite ? QColor(230, 230, 230) : QColor(30, 30, 30);
 
-    const int x = kBoardOrigin + xPos * kSquareSize;
-    const int y = kBoardOrigin + yPos * kSquareSize;
+    const int x = kBoardOrigin + item->xPosition * kSquareSize;
+    const int y = kBoardOrigin + item->yPosition * kSquareSize;
 
-    auto *text = new PieceItem(0, 0, label);
     QFont font("Segoe UI Symbol", 28);
-    text->setFont(font);
-    text->setBrush(textColor);
+    item->setFont(font);
+    item->setBrush(textColor);
     auto *shadow = new QGraphicsDropShadowEffect();
     shadow->setBlurRadius(4);
     shadow->setOffset(0, 0);
-    shadow->setColor(isWhite ? QColor(20, 20, 20) : QColor(235, 235, 235));
-    text->setGraphicsEffect(shadow);
+    shadow->setColor(item->isWhite ? QColor(20, 20, 20) : QColor(235, 235, 235));
+    item->setGraphicsEffect(shadow);
 
-    const QRectF textBounds = text->boundingRect();
+    const QRectF textBounds = item->boundingRect();
     const qreal centerX = x + (kSquareSize - textBounds.width()) / 2.0;
     const qreal centerY = y + (kSquareSize - textBounds.height()) / 2.0;
-    text->setPos(centerX, centerY);
-    scene->addItem(text);
+    item->setPos(centerX, centerY);
+    scene->addItem(item);
 }
 
 void MainWindow::setupPieces()
@@ -190,7 +190,7 @@ void MainWindow::setupPieces()
 
     // ✅add white Pawns
     for (int x = 0; x < kBoardSize; ++x) {
-        addPiece(whitePawn, x, 6, true);
+        addPiece(new Pawn(x, 6, white, ""));
     }
     // ✅add black Pawns
     // for (int x = 0; x < kBoardSize; ++x) {
