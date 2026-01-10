@@ -52,11 +52,6 @@ public:
     bool isWhite;
 };
 
-// const QStringList blackBackRank = {"\u265C", "\u265E", "\u265D", "\u265B", "\u265A", "\u265D", "\u265E", "\u265C"};
-// const QStringList whiteBackRank = {"\u2656", "\u2658", "\u2657", "\u2655", "\u2654", "\u2657", "\u2658", "\u2656"};
-// const QString blackPawn = "\u265F";
-// const QString whitePawn = "\u2659";
-
 class Pawn : public PieceItem
 {
 public:
@@ -69,11 +64,22 @@ public:
 
 class Knight : public PieceItem
 {
-
+public:
+    explicit Knight(int x, int y, bool isWhite)
+        : PieceItem(x, y, isWhite)
+    {
+        setText(isWhite ? "\u265E" : "\u2658");
+    }
 };
 
 class Bishop : public PieceItem
 {
+public:
+    explicit Bishop(int x, int y, bool isWhite)
+        : PieceItem(x, y, isWhite)
+    {
+        setText(isWhite ? "\u265D" : "\u2657");
+    }
 
 };
 
@@ -89,11 +95,22 @@ public:
 
 class Queen : public PieceItem
 {
-
+public:
+    explicit Queen(int x, int y, bool isWhite)
+        : PieceItem(x, y, isWhite)
+    {
+        setText(isWhite ? "\u265B" : "\u2655");
+    }
 };
 
 class King : public PieceItem
 {
+public:
+    explicit King(int x, int y, bool isWhite)
+        : PieceItem(x, y, isWhite)
+    {
+        setText(isWhite ? "\u265A" : "\u2654");
+    }
 
 };
 
@@ -197,6 +214,22 @@ void MainWindow::setupPieces()
     addPiece(new Rook(7, 7, white));
     addPiece(new Rook(0, 0, black));
     addPiece(new Rook(7, 0, black));
+    // ✅add Knights
+    addPiece(new Knight(1, 7, white));
+    addPiece(new Knight(6, 7, white));
+    addPiece(new Knight(1, 0, black));
+    addPiece(new Knight(6, 0, black));
+    // ✅add Bishops
+    addPiece(new Bishop(2, 7, white));
+    addPiece(new Bishop(5, 7, white));
+    addPiece(new Bishop(2, 0, black));
+    addPiece(new Bishop(5, 0, black));
+    // ✅add Queens
+    addPiece(new Queen(3, 7, white));
+    addPiece(new Queen(3, 0, black));
+    // ✅add Kings
+    addPiece(new King(4, 7, white));
+    addPiece(new King(4, 0, black));
 
 
  }
