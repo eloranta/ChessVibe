@@ -25,9 +25,9 @@ public:
         setZValue(1);
     }
 
-    void setLocationBit(int file, int rank)
+    void setLocationBit(int xPos, int yPos)
     {
-        const int index = rank * kBoardSize + file;
+        const int index = yPos * kBoardSize + xPos;
         locationBit = (quint64(1) << index);
     }
 
@@ -43,15 +43,15 @@ protected:
         const QPointF center = pos + QPointF(bounds.width() / 2.0, bounds.height() / 2.0);
         const QPointF localCenter = center - QPointF(kBoardOrigin, kBoardOrigin);
 
-        int file = static_cast<int>(localCenter.x() / kSquareSize);
-        int rank = static_cast<int>(localCenter.y() / kSquareSize);
-        file = qBound(0, file, kBoardSize - 1);
-        rank = qBound(0, rank, kBoardSize - 1);
+        int xPos = static_cast<int>(localCenter.x() / kSquareSize);
+        int yPos = static_cast<int>(localCenter.y() / kSquareSize);
+        xPos = qBound(0, xPos, kBoardSize - 1);
+        yPos = qBound(0, yPos, kBoardSize - 1);
 
-        const qreal targetX = kBoardOrigin + file * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
-        const qreal targetY = kBoardOrigin + rank * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
+        const qreal targetX = kBoardOrigin + xPos * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
+        const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
         setPos(targetX, targetY);
-        setLocationBit(file, rank);
+        setLocationBit(xPos, yPos);
     }
 };
 
