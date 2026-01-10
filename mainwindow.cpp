@@ -262,6 +262,36 @@ public:
     {
         setText(isWhite ? "\u265B" : "\u2655");
     }
+
+    bool isValidMove(int x, int y) override
+    {
+        if (!PieceItem::isValidMove(x, y)) {
+            return false;
+        }
+
+        const int dx = x - xPosition;
+        const int dy = y - yPosition;
+        if (dx == 0 && dy == 0) {
+            return false;
+        }
+
+        const bool diagonal = (qAbs(dx) == qAbs(dy));
+        const bool straight = (dx == 0 || dy == 0);
+        if (!diagonal && !straight) {
+            return false;
+        }
+
+        const int stepX = (dx == 0) ? 0 : (dx > 0 ? 1 : -1);
+        const int stepY = (dy == 0) ? 0 : (dy > 0 ? 1 : -1);
+        const int steps = qMax(qAbs(dx), qAbs(dy));
+        for (int i = 1; i < steps; ++i) {
+            if (isSquareOccupied(xPosition + i * stepX, yPosition + i * stepY)) {
+                return false;
+            }
+        }
+
+        return !isSquareOccupied(x, y);
+    }
 };
 
 class King : public PieceItem
