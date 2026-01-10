@@ -32,6 +32,15 @@ public:
         firstMove = true;
     }
 protected:
+    bool isSquareOccupied(int x, int y) const
+    {
+        for (auto piece : pieces){
+            if (x == piece->xPosition && y == piece->yPosition)
+                return true;
+        }
+        return false;
+    }
+
     static QSoundEffect *moveSound()
     {
         static QSoundEffect *effect = nullptr;
@@ -107,7 +116,7 @@ protected:
         playInvalidMoveSound();
     }
 protected:
-    virtual bool isValidMove(int x, int y)
+    virtual bool isValidMove(int , int)
     {
         if (isWhite == turn)
             return true;
@@ -119,6 +128,7 @@ public:
     bool isWhite;
     static bool turn;
     bool firstMove;
+    static QList<PieceItem *> pieces;
 };
 
 class Pawn : public PieceItem
@@ -137,13 +147,16 @@ public:
         if (x == xPosition)
         {
             int dx = isWhite ? -1 : 1;
-            if (y == yPosition + dx)
-                return true;
+            if (y == yPosition + dx) {
+                return !isSquareOccupied(x, y);
+            }
             if (firstMove)
             {
-                dx = isWhite ? -2 : 2;
-                if (y == yPosition + dx)
-                    return true;
+                const int step1 = yPosition + dx;
+                const int step2 = yPosition + (dx * 2);
+                if (y == step2) {
+                    return !isSquareOccupied(x, step1) && !isSquareOccupied(x, y);
+                }
             }
         }
         return false;
@@ -203,6 +216,7 @@ public:
 };
 
 bool PieceItem::turn = white;
+QList<PieceItem *> PieceItem::pieces;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -291,6 +305,7 @@ void MainWindow::addPiece(PieceItem *item)
     const qreal centerY = y + (kSquareSize - textBounds.height()) / 2.0;
     item->setPos(centerX, centerY);
     scene->addItem(item);
+    PieceItem::pieces.append(item);
 }
 
 void MainWindow::addPieces()
