@@ -20,8 +20,8 @@ constexpr int kBoardOrigin = kBoardMargin;
 class PieceItem : public QGraphicsSimpleTextItem
 {
 public:
-    explicit PieceItem(int x, int y, bool isWhite, const QString &label)
-        : QGraphicsSimpleTextItem(label), xPosition(x), yPosition(y), isWhite(isWhite)
+    explicit PieceItem(int x, int y, bool isWhite)
+        : QGraphicsSimpleTextItem(), xPosition(x), yPosition(y), isWhite(isWhite)
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
@@ -52,11 +52,16 @@ public:
     bool isWhite;
 };
 
+// const QStringList blackBackRank = {"\u265C", "\u265E", "\u265D", "\u265B", "\u265A", "\u265D", "\u265E", "\u265C"};
+// const QStringList whiteBackRank = {"\u2656", "\u2658", "\u2657", "\u2655", "\u2654", "\u2657", "\u2658", "\u2656"};
+// const QString blackPawn = "\u265F";
+// const QString whitePawn = "\u2659";
+
 class Pawn : public PieceItem
 {
 public:
-    explicit Pawn(int x, int y, bool isWhite, const QString &label)
-        : PieceItem(x, y, isWhite, label)
+    explicit Pawn(int x, int y, bool isWhite)
+        : PieceItem(x, y, isWhite)
     {
         setText(isWhite ? "\u2659" : "\u265F");
     }
@@ -74,7 +79,12 @@ class Bishop : public PieceItem
 
 class Rook : public PieceItem
 {
-
+public:
+    explicit Rook(int x, int y, bool isWhite)
+        : PieceItem(x, y, isWhite)
+    {
+        setText(isWhite ? "\u265C" : "\u2656");
+    }
 };
 
 class Queen : public PieceItem
@@ -177,17 +187,16 @@ void MainWindow::addPiece(PieceItem *item)
 
 void MainWindow::setupPieces()
 {
-    const QStringList blackBackRank = {"\u265C", "\u265E", "\u265D", "\u265B", "\u265A", "\u265D", "\u265E", "\u265C"};
-    const QStringList whiteBackRank = {"\u2656", "\u2658", "\u2657", "\u2655", "\u2654", "\u2657", "\u2658", "\u2656"};
-    const QString blackPawn = "\u265F";
-    const QString whitePawn = "\u2659";
+    // ✅add Pawns
+    for (int x = 0; x < kBoardSize; ++x) {
+        addPiece(new Pawn(x, 6, white));
+        addPiece(new Pawn(x, 1, black));
+    }
+    // ✅add Rooks
+    addPiece(new Rook(0, 7, white));
+    addPiece(new Rook(7, 7, white));
+    addPiece(new Rook(0, 0, black));
+    addPiece(new Rook(7, 0, black));
 
-    // ✅add white Pawns
-    for (int x = 0; x < kBoardSize; ++x) {
-        addPiece(new Pawn(x, 6, white, ""));
-    }
-    // ✅add black Pawns
-    for (int x = 0; x < kBoardSize; ++x) {
-        addPiece(new Pawn(x, 1, black, ""));
-    }
+
  }
