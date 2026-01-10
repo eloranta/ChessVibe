@@ -8,7 +8,7 @@
 #include <QtGlobal>
 
 #define white true
-#define balck false
+#define black false
 
 namespace {
 constexpr int kBoardSize = 8;
@@ -58,6 +58,7 @@ public:
     explicit Pawn(int x, int y, bool isWhite, const QString &label)
         : PieceItem(x, y, isWhite, label)
     {
+        setText(isWhite ? "\u2659" : "\u265F");
     }
 };
 
@@ -181,19 +182,12 @@ void MainWindow::setupPieces()
     const QString blackPawn = "\u265F";
     const QString whitePawn = "\u2659";
 
-    // for (int xPos = 0; xPos < kBoardSize; ++xPos) {
-    //     addPiece(blackBackRank[xPos], xPos, 0, false);
-    //     addPiece(blackPawn, xPos, 1, false);
-    //     addPiece(whitePawn, xPos, 6, true);
-    //     addPiece(whiteBackRank[xPos], xPos, 7, true);
-    // }
-
     // ✅add white Pawns
     for (int x = 0; x < kBoardSize; ++x) {
         addPiece(new Pawn(x, 6, white, ""));
     }
     // ✅add black Pawns
-    // for (int x = 0; x < kBoardSize; ++x) {
-    //     addPiece(blackPawn, x, 1, false);
-    // }
+    for (int x = 0; x < kBoardSize; ++x) {
+        addPiece(new Pawn(x, 1, black, ""));
+    }
  }
