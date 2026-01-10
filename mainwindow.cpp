@@ -187,6 +187,7 @@ void MainWindow::addPiece(PieceItem *item)
     const int y = kBoardOrigin + item->yPosition * kSquareSize;
 
     QFont font("Segoe UI Symbol", 28);
+    font.setBold(true);
     item->setFont(font);
     item->setBrush(textColor);
     auto *shadow = new QGraphicsDropShadowEffect();
