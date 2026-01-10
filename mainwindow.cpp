@@ -97,7 +97,6 @@ protected:
 
         const qreal targetX = kBoardOrigin + xPos * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
         const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
-        qDebug() << xPos << yPos;
         if (isValidMove(xPos, yPos))
         {
             setPos(targetX, targetY);
@@ -171,7 +170,21 @@ public:
     {
         setText(isWhite ? "\u265E" : "\u2658");
     }
-};
+    bool isValidMove(int x, int y) override
+    {
+        if (!PieceItem::isValidMove(x, y)) {
+            return false;
+        }
+
+        if (isSquareOccupied(x, y)) {
+            return false;
+        }
+
+        const int dx = qAbs(x - xPosition);
+        const int dy = qAbs(y - yPosition);
+        return (dx == 1 && dy == 2) || (dx == 2 && dy == 1);
+    }
+  };
 
 class Bishop : public PieceItem
 {
