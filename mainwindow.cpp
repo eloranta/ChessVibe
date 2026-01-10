@@ -29,6 +29,7 @@ public:
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
         setZValue(1);
+        firstMove = true;
     }
 protected:
     static QSoundEffect *moveSound()
@@ -96,6 +97,7 @@ protected:
                 yPosition = yPos;
                 playMoveSound();
                 turn = !turn;
+                firstMove = false;
                 return;
             }
         }
@@ -116,6 +118,7 @@ public:
     int yPosition;
     bool isWhite;
     static bool turn;
+    bool firstMove;
 };
 
 class Pawn : public PieceItem
@@ -133,12 +136,18 @@ public:
 
         if (x == xPosition)
         {
-            if (y == yPosition + (isWhite ? -1 : 1))
+            int dx = isWhite ? -1 : 1;
+            if (y == yPosition + dx)
                 return true;
+            if (firstMove)
+            {
+                dx = isWhite ? -2 : 2;
+                if (y == yPosition + dx)
+                    return true;
+            }
         }
         return false;
     }
-
 };
 
 class Knight : public PieceItem
