@@ -303,6 +303,20 @@ public:
         setText(isWhite ? "\u265A" : "\u2654");
     }
 
+    bool isValidMove(int x, int y) override
+    {
+        if (!PieceItem::isValidMove(x, y)) {
+            return false;
+        }
+
+        const int dx = qAbs(x - xPosition);
+        const int dy = qAbs(y - yPosition);
+        if (dx > 1 || dy > 1 || (dx == 0 && dy == 0)) {
+            return false;
+        }
+
+        return !isSquareOccupied(x, y);
+    }
 };
 
 bool PieceItem::turn = white;
