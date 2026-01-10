@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <QApplication>
 #include <QGraphicsRectItem>
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsSceneMouseEvent>
@@ -45,6 +46,11 @@ protected:
         const qreal targetX = kBoardOrigin + xPos * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
         const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
         setPos(targetX, targetY);
+        if (xPos != xPosition || yPos != yPosition) {
+            xPosition = xPos;
+            yPosition = yPos;
+            QApplication::beep();
+        }
     }
 public:
     int xPosition;
