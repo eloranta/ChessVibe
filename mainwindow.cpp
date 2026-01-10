@@ -7,6 +7,8 @@
 #include <QFont>
 #include <QPainter>
 #include <QtGlobal>
+#include <QtMultimedia/QSoundEffect>
+#include <QUrl>
 
 #define white true
 #define black false
@@ -29,6 +31,46 @@ public:
         setZValue(1);
     }
 protected:
+    static QSoundEffect *moveSound()
+    {
+        static QSoundEffect *effect = nullptr;
+        if (!effect) {
+            effect = new QSoundEffect;
+            effect->setSource(QUrl::fromLocalFile("c:/zown/valid.wav"));
+            effect->setVolume(0.7f);
+        }
+        return effect;
+    }
+
+    static QSoundEffect *invalidSound()
+    {
+        static QSoundEffect *effect = nullptr;
+        if (!effect) {
+            effect = new QSoundEffect;
+            effect->setSource(QUrl::fromLocalFile("c:/zown/invalid.wav"));
+            effect->setVolume(0.7f);
+        }
+        return effect;
+    }
+
+    static void playMoveSound()
+    {
+        QSoundEffect *effect = moveSound();
+        if (effect->source().isEmpty()) {
+            return;
+        }
+        effect->play();
+    }
+
+    static void playInvalidMoveSound()
+    {
+        QSoundEffect *effect = invalidSound();
+        if (effect->source().isEmpty()) {
+            return;
+        }
+        effect->play();
+    }
+
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override
     {
         QGraphicsSimpleTextItem::mouseReleaseEvent(event);
@@ -45,12 +87,25 @@ protected:
 
         const qreal targetX = kBoardOrigin + xPos * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
         const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
-        setPos(targetX, targetY);
-        if (xPos != xPosition || yPos != yPosition) {
-            xPosition = xPos;
-            yPosition = yPos;
-            QApplication::beep();
+        if (isValidMove())
+        {
+            setPos(targetX, targetY);
+            if (xPos != xPosition || yPos != yPosition) {
+                xPosition = xPos;
+                yPosition = yPos;
+                playMoveSound();
+            }
+            return;
         }
+        const qreal resetX = kBoardOrigin + xPosition * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
+        const qreal resetY = kBoardOrigin + yPosition * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
+        setPos(resetX, resetY);
+        playInvalidMoveSound();
+    }
+protected:
+    virtual bool isValidMove()
+    {
+        return true;
     }
 public:
     int xPosition;
