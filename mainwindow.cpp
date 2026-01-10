@@ -95,6 +95,7 @@ protected:
                 xPosition = xPos;
                 yPosition = yPos;
                 playMoveSound();
+                turn = !turn;
                 return;
             }
         }
@@ -106,12 +107,15 @@ protected:
 protected:
     virtual bool isValidMove(int x, int y)
     {
+        if (isWhite == turn)
+            return true;
         return false;
     }
 public:
     int xPosition;
     int yPosition;
     bool isWhite;
+    static bool turn;
 };
 
 class Pawn : public PieceItem
@@ -124,6 +128,9 @@ public:
     }
     bool isValidMove(int x, int y) override
     {
+        if (!PieceItem::isValidMove(x, y))
+            return false;
+
         if (x == xPosition)
         {
             if (y == yPosition + (isWhite ? -1 : 1))
@@ -185,6 +192,8 @@ public:
     }
 
 };
+
+bool PieceItem::turn = white;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
