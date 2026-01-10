@@ -37,7 +37,7 @@ protected:
         if (!effect) {
             effect = new QSoundEffect;
             effect->setSource(QUrl::fromLocalFile("c:/zown/valid.wav"));
-            effect->setVolume(0.7f);
+            effect->setVolume(1.0f);
         }
         return effect;
     }
@@ -48,7 +48,7 @@ protected:
         if (!effect) {
             effect = new QSoundEffect;
             effect->setSource(QUrl::fromLocalFile("c:/zown/invalid.wav"));
-            effect->setVolume(0.7f);
+            effect->setVolume(1.0f);
         }
         return effect;
     }
@@ -105,7 +105,7 @@ protected:
 protected:
     virtual bool isValidMove()
     {
-        return true;
+        return false;
     }
 public:
     int xPosition;
@@ -121,6 +121,11 @@ public:
     {
         setText(isWhite ? "\u2659" : "\u265F");
     }
+    bool isValidMove() override
+    {
+        return true;
+    }
+
 };
 
 class Knight : public PieceItem
