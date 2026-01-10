@@ -1,11 +1,14 @@
 #include "mainwindow.h"
-
 #include <QGraphicsRectItem>
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsSceneMouseEvent>
+#include <QGraphicsDropShadowEffect>
 #include <QFont>
 #include <QPainter>
 #include <QtGlobal>
+
+#define white true
+#define balck false
 
 namespace {
 constexpr int kBoardSize = 8;
@@ -17,22 +20,13 @@ constexpr int kBoardOrigin = kBoardMargin;
 class PieceItem : public QGraphicsSimpleTextItem
 {
 public:
-    explicit PieceItem(const QString &label, QGraphicsItem *parent = nullptr)
-        : QGraphicsSimpleTextItem(label, parent)
+    explicit PieceItem(int x, int y, const QString &label)
+        : QGraphicsSimpleTextItem(label), xPosition(x), yPosition(y)
     {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setFlag(QGraphicsItem::ItemIsSelectable, true);
         setZValue(1);
     }
-
-    void setLocationBit(int xPos, int yPos)
-    {
-        const int index = yPos * kBoardSize + xPos;
-        locationBit = (quint64(1) << index);
-    }
-
-    quint64 locationBit = 0;
-
 protected:
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override
     {
@@ -51,8 +45,44 @@ protected:
         const qreal targetX = kBoardOrigin + xPos * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
         const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
         setPos(targetX, targetY);
-        setLocationBit(xPos, yPos);
     }
+public:
+    int xPosition;
+    int yPosition;
+};
+
+class Pawn : public PieceItem
+{
+public:
+    explicit Pawn(int x, int y, const QString &label)
+        : PieceItem(x, y, label)
+    {
+    }
+};
+
+class Knight : public PieceItem
+{
+
+};
+
+class Bishop : public PieceItem
+{
+
+};
+
+class Rook : public PieceItem
+{
+
+};
+
+class Queen : public PieceItem
+{
+
+};
+
+class King : public PieceItem
+{
+
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -72,6 +102,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("ChessVibe");
 
     setupBoard();
+
     setupPieces();
 }
 
@@ -80,12 +111,12 @@ void MainWindow::setupBoard()
     const QColor light(240, 217, 181);
     const QColor dark(181, 136, 99);
 
-    for (int rank = 0; rank < kBoardSize; ++rank) {
-        for (int file = 0; file < kBoardSize; ++file) {
-            const bool isDark = (rank + file) % 2 == 1;
+    for (int yPos = 0; yPos < kBoardSize; ++yPos) {
+        for (int xPos = 0; xPos < kBoardSize; ++xPos) {
+            const bool isDark = (yPos + xPos) % 2 == 1;
             auto *square = scene->addRect(
-                kBoardOrigin + file * kSquareSize,
-                kBoardOrigin + rank * kSquareSize,
+                kBoardOrigin + xPos * kSquareSize,
+                kBoardOrigin + yPos * kSquareSize,
                 kSquareSize,
                 kSquareSize,
                 QPen(Qt::NoPen),
@@ -95,7 +126,9 @@ void MainWindow::setupBoard()
         }
     }
 
+    // ✅add labels
     QFont coordFont("Segoe UI", 10);
+
     for (int xPos = 0; xPos < kBoardSize; ++xPos) {
         const QString label = QString(QChar('a' + xPos));
         auto *top = scene->addSimpleText(label, coordFont);
@@ -117,18 +150,22 @@ void MainWindow::setupBoard()
     }
 }
 
-void MainWindow::addPiece(const QString &label, int file, int rank, bool isWhite)
+void MainWindow::addPiece(const QString &label, int xPos, int yPos, bool isWhite)
 {
-    const QColor textColor = isWhite ? QColor(30, 30, 30) : QColor(230, 230, 230);
+    const QColor textColor = isWhite ? QColor(230, 230, 230) : QColor(30, 30, 30);
 
-    const int x = kBoardOrigin + file * kSquareSize;
-    const int y = kBoardOrigin + rank * kSquareSize;
+    const int x = kBoardOrigin + xPos * kSquareSize;
+    const int y = kBoardOrigin + yPos * kSquareSize;
 
-    auto *text = new PieceItem(label);
+    auto *text = new PieceItem(0, 0, label);
     QFont font("Segoe UI Symbol", 28);
     text->setFont(font);
     text->setBrush(textColor);
-    text->setLocationBit(file, rank);
+    auto *shadow = new QGraphicsDropShadowEffect();
+    shadow->setBlurRadius(4);
+    shadow->setOffset(0, 0);
+    shadow->setColor(isWhite ? QColor(20, 20, 20) : QColor(235, 235, 235));
+    text->setGraphicsEffect(shadow);
 
     const QRectF textBounds = text->boundingRect();
     const qreal centerX = x + (kSquareSize - textBounds.width()) / 2.0;
@@ -144,10 +181,19 @@ void MainWindow::setupPieces()
     const QString blackPawn = "\u265F";
     const QString whitePawn = "\u2659";
 
-    for (int file = 0; file < kBoardSize; ++file) {
-        addPiece(blackBackRank[file], file, 0, false);
-        addPiece(blackPawn, file, 1, false);
-        addPiece(whitePawn, file, 6, true);
-        addPiece(whiteBackRank[file], file, 7, true);
+    // for (int xPos = 0; xPos < kBoardSize; ++xPos) {
+    //     addPiece(blackBackRank[xPos], xPos, 0, false);
+    //     addPiece(blackPawn, xPos, 1, false);
+    //     addPiece(whitePawn, xPos, 6, true);
+    //     addPiece(whiteBackRank[xPos], xPos, 7, true);
+    // }
+
+    // ✅add white Pawns
+    for (int x = 0; x < kBoardSize; ++x) {
+        addPiece(whitePawn, x, 6, true);
     }
-}
+    // ✅add black Pawns
+    // for (int x = 0; x < kBoardSize; ++x) {
+    //     addPiece(blackPawn, x, 1, false);
+    // }
+ }
