@@ -87,15 +87,16 @@ protected:
 
         const qreal targetX = kBoardOrigin + xPos * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
         const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
-        if (isValidMove())
+        qDebug() << xPos << yPos;
+        if (isValidMove(xPos, yPos))
         {
             setPos(targetX, targetY);
             if (xPos != xPosition || yPos != yPosition) {
                 xPosition = xPos;
                 yPosition = yPos;
                 playMoveSound();
+                return;
             }
-            return;
         }
         const qreal resetX = kBoardOrigin + xPosition * kSquareSize + (kSquareSize - bounds.width()) / 2.0;
         const qreal resetY = kBoardOrigin + yPosition * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
@@ -103,7 +104,7 @@ protected:
         playInvalidMoveSound();
     }
 protected:
-    virtual bool isValidMove()
+    virtual bool isValidMove(int x, int y)
     {
         return false;
     }
@@ -121,9 +122,14 @@ public:
     {
         setText(isWhite ? "\u2659" : "\u265F");
     }
-    bool isValidMove() override
+    bool isValidMove(int x, int y) override
     {
-        return true;
+        if (x == xPosition)
+        {
+            if (y == yPosition + (isWhite ? -1 : 1))
+                return true;
+        }
+        return false;
     }
 
 };
