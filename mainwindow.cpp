@@ -132,7 +132,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupBoard();
 
-    setupPieces();
+    addPieces();
 }
 
 void MainWindow::setupBoard()
@@ -203,7 +203,7 @@ void MainWindow::addPiece(PieceItem *item)
     scene->addItem(item);
 }
 
-void MainWindow::setupPieces()
+void MainWindow::addPieces()
 {
     // ✅add Pawns
     for (int x = 0; x < kBoardSize; ++x) {

@@ -16,7 +16,7 @@ public:
 
 private:
     void setupBoard();
-    void setupPieces();
+    void addPieces();
     void addPiece(PieceItem *item);
 
     QGraphicsScene *scene = nullptr;
