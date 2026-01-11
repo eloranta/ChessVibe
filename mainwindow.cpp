@@ -32,6 +32,16 @@ public:
         firstMove = true;
     }
 protected:
+    PieceItem *pieceAt(int x, int y) const
+    {
+        for (auto piece : pieces) {
+            if (x == piece->xPosition && y == piece->yPosition) {
+                return piece;
+            }
+        }
+        return nullptr;
+    }
+
     bool isSquareOccupied(int x, int y) const
     {
         for (auto piece : pieces){
@@ -99,6 +109,14 @@ protected:
         const qreal targetY = kBoardOrigin + yPos * kSquareSize + (kSquareSize - bounds.height()) / 2.0;
         if (isValidMove(xPos, yPos))
         {
+            PieceItem *target = pieceAt(xPos, yPos);
+            if (target && target != this && target->isWhite != isWhite) {
+                pieces.removeOne(target);
+                if (scene()) {
+                    scene()->removeItem(target);
+                }
+                delete target;
+            }
             setPos(targetX, targetY);
             if (xPos != xPosition || yPos != yPosition) {
                 xPosition = xPos;
@@ -115,11 +133,16 @@ protected:
         playInvalidMoveSound();
     }
 protected:
-    virtual bool isValidMove(int , int)
+    virtual bool isValidMove(int x, int y)
     {
-        if (isWhite == turn)
-            return true;
-        return false;
+        if (isWhite != turn) {
+            return false;
+        }
+        PieceItem *target = pieceAt(x, y);
+        if (target && target != this && target->isWhite == isWhite) {
+            return false;
+        }
+        return true;
     }
 public:
     int xPosition;
@@ -158,6 +181,14 @@ public:
                 }
             }
         }
+        else if (qAbs(x - xPosition) == 1)
+        {
+            const int dx = isWhite ? -1 : 1;
+            if (y == yPosition + dx) {
+                PieceItem *target = pieceAt(x, y);
+                return target && target->isWhite != isWhite;
+            }
+        }
         return false;
     }
 };
@@ -173,10 +204,6 @@ public:
     bool isValidMove(int x, int y) override
     {
         if (!PieceItem::isValidMove(x, y)) {
-            return false;
-        }
-
-        if (isSquareOccupied(x, y)) {
             return false;
         }
 
@@ -216,7 +243,7 @@ public:
             }
         }
 
-        return !isSquareOccupied(x, y);
+        return true;
     }
 };
 
@@ -250,7 +277,7 @@ public:
             }
         }
 
-        return !isSquareOccupied(x, y);
+        return true;
     }
 };
 
@@ -290,7 +317,7 @@ public:
             }
         }
 
-        return !isSquareOccupied(x, y);
+        return true;
     }
 };
 
@@ -315,7 +342,7 @@ public:
             return false;
         }
 
-        return !isSquareOccupied(x, y);
+        return true;
     }
 };
 
