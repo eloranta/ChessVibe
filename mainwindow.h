@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include <QLabel>
 
 class PieceItem;
 
@@ -21,7 +22,7 @@ private:
 
     QGraphicsScene *scene = nullptr;
     QGraphicsView *view = nullptr;
-    QList<PieceItem *> pieces;
+    QLabel *turnLabel = nullptr;
 };
 
 #endif // MAINWINDOW_H

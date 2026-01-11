@@ -6,6 +6,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QFont>
 #include <QPainter>
+#include <QStatusBar>
 #include <QtGlobal>
 #include <QtMultimedia/QSoundEffect>
 #include <QUrl>
@@ -31,6 +32,15 @@ public:
         setZValue(1);
         firstMove = true;
     }
+public:
+    static void updateTurnLabel()
+    {
+        if (!turnLabel) {
+            return;
+        }
+        turnLabel->setText(turn ? "Turn: White" : "Turn: Black");
+    }
+
 protected:
     PieceItem *pieceAt(int x, int y) const
     {
@@ -123,6 +133,7 @@ protected:
                 yPosition = yPos;
                 playMoveSound();
                 turn = !turn;
+                updateTurnLabel();
                 firstMove = false;
                 return;
             }
@@ -151,6 +162,7 @@ public:
     static bool turn;
     bool firstMove;
     static QList<PieceItem *> pieces;
+    static QLabel *turnLabel;
 };
 
 class Pawn : public PieceItem
@@ -348,6 +360,7 @@ public:
 
 bool PieceItem::turn = white;
 QList<PieceItem *> PieceItem::pieces;
+QLabel *PieceItem::turnLabel = nullptr;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -364,6 +377,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     setCentralWidget(view);
     setWindowTitle("ChessVibe");
+
+    turnLabel = new QLabel(this);
+    statusBar()->addPermanentWidget(turnLabel);
+    PieceItem::turnLabel = turnLabel;
+    PieceItem::updateTurnLabel();
 
     setupBoard();
 
