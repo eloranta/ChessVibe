@@ -8,3 +8,5 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h
+
+RESOURCES += sounds.qrc

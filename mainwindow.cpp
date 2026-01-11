@@ -66,7 +66,7 @@ protected:
         static QSoundEffect *effect = nullptr;
         if (!effect) {
             effect = new QSoundEffect;
-            effect->setSource(QUrl::fromLocalFile("c:/zown/valid.wav"));
+            effect->setSource(QUrl("qrc:/sounds/valid.wav"));
             effect->setVolume(1.0f);
         }
         return effect;
@@ -77,7 +77,7 @@ protected:
         static QSoundEffect *effect = nullptr;
         if (!effect) {
             effect = new QSoundEffect;
-            effect->setSource(QUrl::fromLocalFile("c:/zown/invalid.wav"));
+            effect->setSource(QUrl("qrc:/sounds/invalid.wav"));
             effect->setVolume(1.0f);
         }
         return effect;
